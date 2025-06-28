@@ -1,4 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {
   MatCell,
@@ -12,6 +14,7 @@ import {
   MatRowDef,
   MatTable
 } from '@angular/material/table';
+import {debounceTime, distinctUntilChanged} from 'rxjs';
 import {PeriodicElementsStore} from './store/periodic-elements-store';
 
 @Component({
@@ -27,7 +30,13 @@ import {PeriodicElementsStore} from './store/periodic-elements-store';
     MatHeaderRow,
     MatRow,
     MatHeaderRowDef,
-    MatRowDef
+    MatRowDef,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatLabel,
+    MatFormField,
+    ReactiveFormsModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -38,7 +47,16 @@ export class AppComponent implements OnInit {
 
   protected _displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
 
+  protected readonly _filter = new FormControl<string>('');
+
   ngOnInit(): void {
     this._periodicElementsStore.loadAll();
+
+    this._filter.valueChanges.pipe(
+      debounceTime(2000),
+      distinctUntilChanged()
+    ).subscribe(filter => {
+      this._periodicElementsStore.applyFilter(filter || '');
+    });
   }
 }

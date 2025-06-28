@@ -1,8 +1,13 @@
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput [formControl]="_filter" placeholder="Enter value"/>
+</mat-form-field>
+
 @if (_periodicElementsStore.isLoading()) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 }
 
-<table mat-table [dataSource]="_periodicElementsStore.periodicElements()">
+<table mat-table [dataSource]="_periodicElementsStore.filteredPerioticElements()">
 
   <!-- Position Column -->
   <ng-container matColumnDef="position">
