@@ -1,5 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {
@@ -15,6 +16,12 @@ import {
   MatTable
 } from '@angular/material/table';
 import {debounceTime, distinctUntilChanged} from 'rxjs';
+import {EditPeriodicElementComponent} from './componets/edit-periodic-element/edit-periodic-element.component';
+import {
+  EditPeriodicElementResult,
+  EditPerioticElement,
+  EditPerioticElementPropertyName
+} from './models/edit-periotic-element';
 import {PeriodicElementsStore} from './store/periodic-elements-store';
 
 @Component({
@@ -44,6 +51,7 @@ import {PeriodicElementsStore} from './store/periodic-elements-store';
 export class AppComponent implements OnInit {
 
   protected readonly _periodicElementsStore = inject(PeriodicElementsStore);
+  private readonly _dialog = inject(MatDialog);
 
   protected _displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
 
@@ -57,6 +65,17 @@ export class AppComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(filter => {
       this._periodicElementsStore.applyFilter(filter || '');
+    });
+  }
+
+  openEditPeriodicElement(id: string, editPerioticElementPropertyName: EditPerioticElementPropertyName, value: string | number) {
+
+    const dialogRef = this._dialog.open<EditPeriodicElementComponent, EditPerioticElement, EditPeriodicElementResult>(EditPeriodicElementComponent, {
+      data: {id, editPerioticElementPropertyName, value} as EditPerioticElement,
+    });
+
+    dialogRef.afterClosed().subscribe((editPeriodicElementResult) => {
+      this._periodicElementsStore.updateElement(editPeriodicElementResult!);
     });
   }
 }

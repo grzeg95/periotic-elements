@@ -1,5 +1,6 @@
 import {computed, inject} from '@angular/core';
 import {patchState, signalStore, withComputed, withMethods, withState} from '@ngrx/signals';
+import {EditPeriodicElementResult} from '../models/edit-periotic-element';
 import {PeriodicElement} from '../models/periotic-element';
 import {PeriodicElementsService} from '../services/periodic-elements.service';
 
@@ -25,6 +26,30 @@ export const PeriodicElementsStore = signalStore(
     },
     applyFilter(filter: string) {
       patchState(store, {filter});
+    },
+    updateElement(editElementResult: EditPeriodicElementResult) {
+      patchState(store, (state) => {
+
+        const periodicElements = state.periodicElements.map((periodicElement) => {
+          if (editElementResult.id === periodicElement.id) {
+
+            const newPeriodicElement = {...periodicElement};
+
+            switch(editElementResult.editPerioticElementPropertyName) {
+              case 'position': newPeriodicElement.position = parseInt(editElementResult.value); break;
+              case 'name': newPeriodicElement.name = editElementResult.value; break;
+              case 'weight': newPeriodicElement.weight = parseFloat(editElementResult.value); break;
+              case 'symbol': newPeriodicElement.symbol = editElementResult.value; break;
+            }
+
+            return newPeriodicElement;
+          } else {
+            return periodicElement;
+          }
+        });
+
+        return {periodicElements};
+      });
     }
   })),
   withComputed((state) => ({

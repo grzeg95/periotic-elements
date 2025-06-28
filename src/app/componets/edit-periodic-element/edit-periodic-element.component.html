@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Edit {{_data.editPerioticElementPropertyName}}</h2>
+<mat-dialog-content>
+  <p>Change value</p>
+  <form [formGroup]="_editForm" (ngSubmit)="onClose()">
+    <mat-form-field>
+      <mat-label>{{_data.editPerioticElementPropertyName | capitalize}}</mat-label>
+      <input matInput formControlName="editedValue" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onClose()">Update</button>
+</mat-dialog-actions>
